@@ -1,0 +1,10 @@
+procedure main is
+x,y:integer;
+begin
+  x := 8;
+  if x < 5 then
+    y := 1
+  else
+    y := 0
+  end
+end.

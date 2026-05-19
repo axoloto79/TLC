@@ -1,0 +1,8 @@
+procedure main is
+  function double(x : in integer) return integer is
+  begin
+    return x + x
+  end;
+begin
+  put(double(2, 3)) // erreur : trop d'arguments
+end.

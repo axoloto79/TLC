@@ -1,6 +1,7 @@
 //----------------------------------------------------
 // Programme correct
 //
+//   aucun affichage 
 //------------------------------------------------------
 procedure pp is
   procedure p(v : in integer; i : in out integer) is

@@ -2,8 +2,9 @@
 // Programme correct
 //  
 //
-//    Boucles imbriquées
+//    Boucles imbriquï¿½es
 //   doit afficher 4 fois : 
+//>1 (on put j a chaque debut de la boucle interne)
 //>1
 //>2
 //>3
@@ -16,12 +17,13 @@ procedure pp is
   begin
     i:=1;
     //Invariant :
-      //on a affiché i-1 fois 1, 2, 3, 4
+      //on a affichï¿½ i-1 fois 1, 2, 3, 4
       //1<=i<=5
       while i/=5 loop
         j:=1;
+        put(j);
         //Invariant
-        //on a affiché 1, ..j-1
+        //on a affichï¿½ 1, ..j-1
         //1<=j<=5
         while j/=5 loop
           put(j);

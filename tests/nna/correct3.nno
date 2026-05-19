@@ -2,17 +2,20 @@
 // Programme correct
 //  
 //
-//  évaluation de conditions complexes
+//  ï¿½valuation de conditions complexes
+//   doit afficher 
+//>rien si i>=23 ou i<=3
+//>-34 sinon
 //-------------------------------------------------------
 
 procedure pp is
-  b:boolean;
+  b, j:boolean;
   i:integer;
 begin
   get(i);
   b:=i<=23;
   if b and i>2 then
-    b:= not b or i=20;
+    b:= not b or -i=20;
     if b then
       put(i*3)
     end

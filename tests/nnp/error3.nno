@@ -1,0 +1,4 @@
+procedure main is
+begin
+  doSomething(5) // erreur : 'doSomething' n'existe pas
+end.

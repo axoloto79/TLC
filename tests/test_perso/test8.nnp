@@ -1,0 +1,19 @@
+procedure myProgram is
+  procedure sayhello(v : in integer; w : in integer) is
+  x:integer;
+  begin
+    x := v+w;
+    put(x)
+  end;
+
+  procedure saygoodbye(u : in integer; z : in integer) is
+  y:integer;
+  begin
+    y := u+z;
+    put(y)
+  end;
+
+begin
+  sayhello(10, 20);
+  saygoodbye(1, 2)
+end.

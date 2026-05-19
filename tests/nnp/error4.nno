@@ -1,0 +1,14 @@
+procedure main is
+  procedure foo(a : in integer) is
+  begin
+    put(a)
+  end;
+
+  procedure foo(b : in boolean) is
+  begin
+    put(0)
+  end; // erreur : redéclaration de 'foo'
+
+begin
+  foo(3)
+end.

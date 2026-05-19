@@ -1,6 +1,8 @@
 //----------------------------------------------------
 // Programme correct
 //
+//   doit afficher : 
+//>120 (factorielle de 5)
 //------------------------------------------------------
 procedure pp is
   function fa(n : in integer) return integer is
@@ -12,5 +14,5 @@ procedure pp is
     end
   end;
 begin
-  put(fa(3))
+  put(fa(5))
 end.

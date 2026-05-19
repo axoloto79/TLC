@@ -1,0 +1,15 @@
+procedure myProgram is
+  procedure sayhello(v : in integer) is
+  begin
+    put(v)
+  end;
+
+  procedure saygoodbye(u : in integer) is
+  begin
+    put(u)
+  end;
+
+begin
+  sayhello(10);
+  saygoodbye(1)
+end.
