@@ -8,9 +8,9 @@ for i in range(1,5):
 
     base_dir = os.path.dirname(__file__)
     anasyn_path = os.path.join(base_dir, "src", "anasyn.py")
-    test_file = os.path.join(base_dir, "tests", "nna", f"correct{i}.nno") # change this to your test file path
+    test_file = os.path.join(base_dir, "tests", "nna", f"correct{i}.nno") # adapter le chemin si besoin
 
-    # Compilator execution
+    # Exécution du compilateur
     result = subprocess.run(["python", anasyn_path, test_file], capture_output=True, text=True)
     if result.returncode != 0:
         print("❌ Erreur détectée dans anasyn.py :")

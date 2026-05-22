@@ -5,16 +5,15 @@ class SemanticException(Exception):
 
 class SemanticChecker:
     """
-    Manages the semantic analysis phase of a language compiler or interpreter by
-    handling scoped symbol tables, variable declaration, type checking, and
-    semantic rules verification.
+    Gère la phase d'analyse sémantique d'un compilateur/interpréteur :
+    tables des symboles par scope, déclarations de variables, vérification
+    des types et règles sémantiques.
 
-
-    :ivar scopes: A stack of dictionaries, where each dictionary represents
-        variable declarations within a specific block or scope. FOR NNP, TO DO
-    :ivar symbols: List of recorded identifiers with their attributes such as
-        names, types, scopes, and initialization status.
-    :ivar current_scope: The active scope name as a string.
+    :ivar scopes: pile de dictionnaires, chaque dictionnaire représente
+        les déclarations de variables d'un bloc ou scope.
+    :ivar symbols: liste des identificateurs enregistrés avec leurs attributs
+        (nom, type, scope, état d'initialisation).
+    :ivar current_scope: nom du scope courant (chaîne).
     """
     def __init__(self):
         self.scopes = [{}]  # stack of dicts: one per block
@@ -23,10 +22,10 @@ class SemanticChecker:
 
     def enter_scope(self, name):
         """
-        Manages the assignment of the current scope name and appends a new,
-        empty dictionary to the list of scopes.
+        Définit le nom du scope courant et ajoute un nouveau dictionnaire
+        vide à la pile des scopes.
 
-        :param name: The name or identifier of the current scope.
+        :param name: nom ou identifiant du scope courant.
         :type name: str
         :return: None
         """
@@ -35,9 +34,7 @@ class SemanticChecker:
 
     def exit_scope(self):
         """
-        Updates the current scope to a global level and removes the latest scope from
-        the stack of scopes. This method is used to exit the current scope and revert
-        to the global scope while managing the stack of nested scopes.
+        Reviens au scope global et retire le dernier scope de la pile.
 
         :return: None
         """
@@ -46,20 +43,17 @@ class SemanticChecker:
 
     def declare_variable(self, name_var, type_var, mode=None):
         """
-        Declares a variable in the current scope with its name, type, and mode. If the variable
-        already exists in the current scope, it raises a SemanticException. This method also
-        appends the variable's details to the symbol table, keeping track of its scope, initialization
-        status, and mode.
+        Déclare une variable dans le scope courant (nom, type, mode).
+        Lève une SemanticException si la variable existe déjà dans le scope.
 
-        :param name_var: Name of the variable to be declared.
+        :param name_var: nom de la variable à déclarer.
         :type name_var: str
-        :param type_var: Type of the variable being declared.
+        :param type_var: type de la variable.
         :type type_var: Any
-        :param mode: An optional list representing the mode of the variable. Defaults to ["in", "out"].
+        :param mode: liste optionnelle représentant le mode (par défaut ["in","out"]).
         :type mode: list or None
         :return: None
-        :rtype: NoneType
-        :raises SemanticException: If the variable is already declared in the current scope.
+        :raises SemanticException: si la variable est déjà déclarée dans le scope courant.
         """
         if mode is None:
             mode = ["in", "out"]
@@ -75,12 +69,11 @@ class SemanticChecker:
         })
     def get_mode(self,name_var):
         """
-        Retrieves the mode of a variable from the symbol table.
+        Récupère le mode d'une variable dans la table des symboles.
 
-        :param name_var: The name of the variable whose mode is to be retrieved.
-        :return: The mode of the variable with the specified name.
-        :raises SemanticException: If the variable with the specified name is
-            not found in the symbol table.
+        :param name_var: nom de la variable.
+        :return: mode de la variable.
+        :raises SemanticException: si la variable n'est pas trouvée.
         """
         for entry in self.symbols:
             if entry["name"] == name_var:
@@ -88,25 +81,24 @@ class SemanticChecker:
         raise SemanticException(f"Variable '{name_var}' not found in the symbol table.")
     def check_mode(self,name_var,mode):
         """
-        Checks if the specified variable is used with the correct mode.
+        Vérifie que la variable est utilisée avec le mode attendu.
 
-        :param name_var: The name of the variable to check.
+        :param name_var: nom de la variable à vérifier.
         :type name_var: str
-        :param mode: The expected mode of the variable.
+        :param mode: mode attendu.
         :type mode: str
-        :raises SemanticException: If the actual mode of the variable
-            does not match the expected mode.
+        :raises SemanticException: si le mode réel ne correspond pas au mode attendu.
         """
         if self.get_mode(name_var) != mode:
             raise SemanticException(f"Variable '{name_var}' is used without being declared.")
 
     def is_variable_declared(self, name_var):
         """
-        Check if a variable with the given name is declared in the current or global scope.
+        Vérifie si une variable est déclarée dans le scope courant ou global.
 
-        :param name_var: The name of the variable to check for declaration.
+        :param name_var: nom de la variable.
         :type name_var: str
-        :return: True if the variable is declared in the current or global scope, False otherwise.
+        :return: True si la variable est déclarée, False sinon.
         :rtype: bool
         """
         for scope in reversed(self.scopes):
@@ -116,13 +108,13 @@ class SemanticChecker:
 
     def check_variable_declared(self, name_var):
         """
-        Checks if a variable is declared and retrieves its declared type.
+        Vérifie qu'une variable est déclarée et retourne son type déclaré.
 
-        :param name_var: The name of the variable to check.
+        :param name_var: nom de la variable.
         :type name_var: str
-        :return: The declared type of the variable.
+        :return: type déclaré de la variable.
         :rtype: Any
-        :raises SemanticException: If the variable is used without being declared.
+        :raises SemanticException: si la variable est utilisée sans être déclarée.
         """
         if not self.is_variable_declared(name_var):
             raise SemanticException(f"Variable '{name_var}' is used without being declared.")
@@ -131,20 +123,16 @@ class SemanticChecker:
 
     def get_declared_type(self, name):
         """
-        Retrieves the type of a declared variable or identifier from the symbol table.
+        Récupère le type d'une variable/identificateur déclaré dans la table des symboles.
 
-        The function searches through the symbol table entries in reverse order to find
-        the most recent declaration of the given name. If the identifier is found, its
-        associated type is returned. If the identifier is not found in the symbol table,
-        a ``SemanticException`` is raised.
+        La recherche se fait en parcourant la table à l'envers pour trouver la déclaration
+        la plus récente. Lève une SemanticException si l'identifiant n'est pas trouvé.
 
-        :param name: The name of the identifier to look for in the symbol table.
+        :param name: nom de l'identifiant recherché.
         :type name: str
-
-        :return: The type of the identified variable or declaration.
+        :return: type de l'identifiant.
         :rtype: Any
-
-        :raises SemanticException: If the identifier is not found in the symbol table.
+        :raises SemanticException: si l'identifiant n'est pas trouvé.
         """
         for entry in reversed(self.symbols):
             if entry["name"] == name:
@@ -153,30 +141,27 @@ class SemanticChecker:
 
     def check_type(self, type1, type2):
         """
-        Validates whether the two given types are compatible. If the types do
-        not match, a SemanticException is raised to indicate an invalid operation.
-        This function ensures type safety during runtime.
+        Vérifie que deux types sont compatibles. Lève une SemanticException si
+        les types diffèrent.
 
-        :param type1: The first type to compare.
-        :param type2: The second type to compare.
+        :param type1: premier type à comparer.
+        :param type2: second type à comparer.
         :return: None
-        :raises SemanticException: If the types do not match.
+        :raises SemanticException: si les types ne correspondent pas.
         """
         if type1 != type2:
             raise SemanticException(f"Type error: Operation between '{type1}' and '{type2}' is not allowed.")
 
     def get_variable_type(self, name):
         """
-        Determine the type of a variable by searching through the current and parent
-        scopes in reverse order. The method looks for the variable name in each scope
-        and returns its type if found. If the variable is not declared in any of the
-        scopes, an exception is raised.
+        Détermine le type d'une variable en parcourant les scopes du plus interne
+        au plus externe. Lève une exception si la variable n'est pas déclarée.
 
-        :param name: The name of the variable whose type is to be determined.
+        :param name: nom de la variable.
         :type name: str
-        :return: The type of the variable as a string.
+        :return: type de la variable.
         :rtype: str
-        :raises SemanticException: If the variable is not declared in any scope.
+        :raises SemanticException: si la variable n'est pas déclarée.
         """
         for scope in reversed(self.scopes):
             if name in scope and isinstance(scope[name], str):
@@ -185,20 +170,18 @@ class SemanticChecker:
 
     def init_variable(self, name, type_affect):
         """
-        Marks a variable as initialized within the symbol table and verifies its type consistency.
+        Marque une variable comme initialisée dans la table des symboles et
+        vérifie la cohérence des types.
 
-        This function updates the initialization status of a variable if it is declared
-        in the symbol table. Additionally, it ensures that the type of the variable matches
-        the expected type. If the variable is not declared or the types do not match, it raises
-        a `SemanticException`.
+        Met à jour l'état d'initialisation si la variable est déclarée. Vérifie
+        que le type assigné correspond au type déclaré, sinon lève une exception.
 
-        :param name: The name of the variable to initialize.
+        :param name: nom de la variable.
         :type name: str
-        :param type_affect: The type of the value to be assigned to the variable.
+        :param type_affect: type de la valeur affectée.
         :type type_affect: str
         :return: None
-        :raises SemanticException: If the variable is not declared in the symbol table or if the
-            type of the assigned value does not match the declared type.
+        :raises SemanticException: si la variable n'est pas déclarée ou si les types diffèrent.
         """
         for entry in reversed(self.symbols):
             if entry["name"] == name:
@@ -213,15 +196,12 @@ class SemanticChecker:
 
     def check_init_variable(self, name):
         """
-        Checks if a variable with the given name has been initialized. If the
-        variable is found in the symbol table but is not initialized, raises a
-        SemanticException. Also raises a SemanticException if the variable is
-        not declared in the symbol table.
+        Vérifie si une variable a été initialisée. Lève une SemanticException
+        si la variable existe mais n'est pas initialisée, ou si elle n'est pas déclarée.
 
-        :param name: The name of the variable to check (str).
+        :param name: nom de la variable (str).
         :return: None
-        :raises SemanticException: If the variable is not declared or not
-            initialized in the symbol table.
+        :raises SemanticException: si la variable n'est pas déclarée ou non initialisée.
         """
         for entry in reversed(self.symbols):
             if entry["name"] == name:
@@ -232,29 +212,24 @@ class SemanticChecker:
 
     def check_condition_if(self, type_cond):
         """
-        Checks whether the provided condition type is a boolean.
+        Vérifie que le type de la condition d'un "if" est boolean.
+        Lève une SemanticException sinon.
 
-        This function ensures that a first-class requirement for
-        an if-condition is being met, i.e., its type being boolean.
-        If the condition is of an invalid type, a `SemanticException`
-        will be raised, detailing the expected and received type.
-
-        :param type_cond: The type of the if-condition to be verified.
+        :param type_cond: type de la condition du if.
         :type type_cond: str
-        :raises SemanticException: If the type is not "boolean".
+        :raises SemanticException: si le type n'est pas "boolean".
         """
         if type_cond != "boolean":
             raise SemanticException(f"Type error: The if-condition must be a boolean, got '{type_cond}'.")
 
     def check_condition_while(self, type_cond):
         """
-        Validates the type of a condition used in a 'while' construct. The method checks
-        if the provided condition type is "boolean". If the type is not "boolean", it
-        raises a SemanticException with an appropriate error message.
+        Vérifie que le type de la condition d'une boucle 'while' est boolean.
+        Lève une SemanticException sinon.
 
-        :param type_cond: The type of the condition to validate.
+        :param type_cond: type de la condition.
         :type type_cond: str
-        :raises SemanticException: If the condition type is not "boolean".
+        :raises SemanticException: si le type n'est pas "boolean".
         """
         if type_cond != "boolean":
             raise SemanticException(f"Type error: The while-condition must be a boolean, got '{type_cond}'.")
@@ -262,18 +237,16 @@ class SemanticChecker:
 
     def declare_function(self, name, params,type_return):
         """
-        Declares a new function in the symbol table, enforcing uniqueness of function
-        declarations by name within the same scope.
+        Déclare une nouvelle fonction dans la table des symboles en veillant
+        à l'unicité du nom dans le scope courant.
 
-        :param name: The name of the function to be declared.
+        :param name: nom de la fonction.
         :type name: str
-        :param params: The parameters of the function, typically as a list or other
-            iterable structure containing parameter specifications.
+        :param params: paramètres de la fonction.
         :type params: Any
-        :param type_return: The return type of the function being declared.
+        :param type_return: type de retour de la fonction.
         :type type_return: Any
-        :raises SemanticException: If a function with the same name has already been
-            declared in the current scope.
+        :raises SemanticException: si une fonction du même nom existe déjà.
         """
         if name in [symbol["name"] for symbol in self.symbols]:
             raise SemanticException(f"Function '{name}' already declared.")
@@ -286,19 +259,14 @@ class SemanticChecker:
         })
     def declare_procedure(self, name, params):
         """
-        Declares a new procedure within the symbol table. The procedure, along with
-        its name, type, scope, and parameters, is appended to the symbol table if it
-        has not already been declared. If a procedure with the same name is already
-        present, an error is raised.
+        Déclare une nouvelle procédure dans la table des symboles. Lève une
+        exception si une procédure du même nom existe déjà.
 
-        :param name: The name of the procedure to declare.
+        :param name: nom de la procédure.
         :type name: str
-        :param params: A list of parameters defining the procedure. Each parameter
-                       is represented as a dictionary with details such as type and
-                       name.
+        :param params: liste des paramètres de la procédure.
         :type params: list[dict]
-        :raises SemanticException: If a procedure with the provided name has already
-                                    been declared.
+        :raises SemanticException: si la procédure existe déjà.
         """
         if name in [symbol["name"] for symbol in self.symbols]:
             raise SemanticException(f"Procedure '{name}' already declared.")
@@ -310,18 +278,14 @@ class SemanticChecker:
         })
     def get_parameters(self,name):
         """
-        Retrieves the parameters of a function or a procedure from the symbol table by its name.
+        Récupère les paramètres d'une fonction ou procédure par son nom depuis
+        la table des symboles. Parcourt la table du plus récent au plus ancien.
 
-        The method searches for the first occurrence of the function name in the
-        symbol table, starting from the most recent entry and iterating backwards.
-        If the function is found, its associated parameters are returned. If the
-        function is not found, an exception is raised.
-
-        :param name: Name of the function to retrieve parameters for
+        :param name: nom de la fonction.
         :type name: str
-        :return: Parameters of the specified function
+        :return: paramètres de la fonction.
         :rtype: Any
-        :raises SemanticException: If the function name is not found in the symbol table
+        :raises SemanticException: si le nom n'est pas trouvé.
         """
         for entry in reversed(self.symbols):
             if entry["name"] == name:
@@ -329,23 +293,19 @@ class SemanticChecker:
         raise SemanticException(f"Ident '{name}' not found in the symbol table.")
     def check_parameters(self,name,params):
         """
-        Checks the validity of parameters passed for a function or procedure by comparing them
-        against its declaration within the symbol table.
+        Vérifie la validité des paramètres fournis pour un appel de fonction/procédure
+        en les comparant à la déclaration présente dans la table des symboles.
 
-        This method ensures the provided parameters match both in count and type with what is
-        declared for the function or procedure. Additionally, it identifies if the given name
-        is either a function or a procedure and processes accordingly. An exception is raised
-        if there is a mismatch or if the specified function or procedure cannot be found in the
-        symbol table.
+        Assure la correspondance en nombre et en types. Retourne le type de retour
+        si c'est une fonction, None si c'est une procédure.
 
-        :param name: The name of the function or procedure to check.
+        :param name: nom de la fonction/procédure.
         :type name: str
-        :param params: A list of parameters provided at the call site that are to be validated.
+        :param params: liste des paramètres fournis.
         :type params: list
-        :return: The return type of the function if it is a function, or None if it is a procedure.
+        :return: type de retour ou None.
         :rtype: Optional[Any]
-        :raises SemanticException: If there is a mismatch in parameter count or types, or if
-            the specified function or procedure is not found.
+        :raises SemanticException: en cas de désaccord sur le nombre/types ou si le nom est introuvable.
         """
         for entry in reversed(self.symbols):
             if entry["name"] == name:

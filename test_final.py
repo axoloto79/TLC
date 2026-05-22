@@ -22,9 +22,9 @@ for root, dirs, files in os.walk(dir_test):
             print(f"\nContenu du fichier {test_file}:")
             with open(test_file, 'r') as f:
                 print(f.read())
-            # Compilator execution
+            # Exécution du compilateur
             result = subprocess.run(["python", anasyn_path, test_file], capture_output=True, text=True)
-            # Check if the subprocess encountered any errors during execution
+            # Vérifie si le sous-processus a rencontré des erreurs lors de l'exécution
             if result.returncode != 0:
                 print(f"❌ Erreur détectée dans {file} :")
                 print(result.stderr) # permet l'affichage de l'erreur dans le terminal
@@ -39,11 +39,11 @@ for root, dirs, files in os.walk(dir_test):
                             code_lines.append(parsed)
                     except Exception:
                         continue  # ignorer les lignes non valides
-                # Initialize a virtual machine to execute the generated code
+                # Initialise une machine virtuelle pour exécuter le code généré
                 vm = VirtualMachine()
-                # Load the output code from the previous step into the virtual machine
+                # Charge le code généré dans la machine virtuelle
                 vm.load_code(code_lines)
-                # Run the virtual machine to execute the loaded code
+                # Lance l'exécution du code
                 vm.run()
 
 

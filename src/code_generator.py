@@ -1,15 +1,14 @@
 import sys
 class CodeGenerator:
     """
-    Represents a code generator for emitting instructions and managing labels.
+    Générateur de code pour émettre des instructions et gérer les labels.
 
-    This class provides functionality to build a sequence of instructions with optional
-    arguments, generate labels, and reset the current state. The emitted instructions
-    can be retrieved or printed as required.
+    Cette classe permet de construire une séquence d'instructions (avec
+    arguments optionnels), générer des labels et réinitialiser l'état.
 
-    :ivar instructions: A list that stores all the emitted instructions in sequence.
+    :ivar instructions: liste des instructions émises.
     :type instructions: list[str]
-    :ivar label_counter: A counter used to generate unique labels.
+    :ivar label_counter: compteur pour générer des labels uniques.
     :type label_counter: int
     """
     def __init__(self):
@@ -32,8 +31,8 @@ class CodeGenerator:
 
     def reset(self):
         """
-        Resets the state of the object by clearing the list of instructions and resetting
-        the label counter to its initial value.
+        Réinitialise l'état en vidant la liste d'instructions et en remettant
+        le compteur de labels à sa valeur initiale.
 
         :return: None
         """
@@ -42,15 +41,12 @@ class CodeGenerator:
 
     def emit(self, opName, arg=None):
         """
-        Appends an instruction to the instructions list. The instruction consists of
-        an opName and, optionally, an argument. When the argument is provided, it
-        is appended alongside the opName in a single formatted string. If no argument
-        is provided, only the opName is added.
+        Ajoute une instruction à la liste. L'instruction est composée d'un nom
+        d'opération et éventuellement d'un argument.
 
-        :param opName: The operation name to be added to the list of instructions.
+        :param opName: nom de l'opération.
         :type opName: str
-        :param arg: The optional argument associated with the opName. Defaults to None.
-        :type arg: int or (int, int) depend of instruction, optional
+        :param arg: argument optionnel (int ou tuple d'int). Par défaut None.
         :return: None
         """
         self.instructions.append((opName, arg))
@@ -58,9 +54,9 @@ class CodeGenerator:
 
     def add_identifier(self, name):
         """
-        Adds an identifier to the identifier table with a unique index.
+        Ajoute un identificateur à la table avec un index unique.
 
-        :param name: The name of the identifier to be added.
+        :param name: nom de l'identificateur.
         :type name: str
         """
         self.identifier_table[name] = self.identifier_counter
@@ -69,14 +65,12 @@ class CodeGenerator:
 
     def print_code(self, output=None):
         """
-        Prints the instructions to the given output stream.
+        Imprime les instructions sur le flux de sortie donné.
 
-        This method iterates over the instructions and writes each to the specified
-        output stream. If no output stream is provided, it defaults to using the
-        standard output.
+        Parcourt la liste d'instructions et écrit chacune sur le flux fourni
+        (par défaut stdout).
 
-        :param output: The output stream to print the instructions. Defaults to
-            standard output.
+        :param output: flux de sortie (optionnel).
         :type output: Optional[IO]
         :return: None
         """
@@ -89,18 +83,19 @@ class CodeGenerator:
 
     def get_last_opname(self):
         """
-        Returns the last operation name from the instructions list.
+        Retourne le nom de la dernière opération dans la liste d'instructions.
 
-        :return: The last operation name as a string.
+        :return: nom de l'opération (str) ou None si la liste est vide.
         :rtype: str
         """
         return self.instructions[-1][0] if self.instructions else None # vérifier si la liste est vide avant d'accéder au dernier élément
 
     def patch_tra_instructions(self, replacement_arg):
         """
-        Remplace toutes les instructions 'tra' sans argument par 'tra' avec replacement_arg.
+        Remplace toutes les instructions 'tra' sans argument par 'tra' avec
+        l'argument fourni.
 
-        :param replacement_arg: La valeur entière à utiliser comme argument de remplacement.
+        :param replacement_arg: valeur entière utilisée comme argument.
         :type replacement_arg: int
         """
         new_instructions = []
