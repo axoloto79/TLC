@@ -1,8 +1,0 @@
-procedure main is
-  procedure sayHello(a : in integer) is
-  begin
-    put(a)
-  end;
-begin
-  sayHello() // erreur : argument manquant
-end.

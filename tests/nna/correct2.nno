@@ -4,13 +4,12 @@
 //
 //    expression relationnelle  avec des bool ens
 //   doit afficher 
-//>0
+//>1
 //------------------------------------------------------
 procedure pp is
   b:boolean;
 begin
   b:=true;
-  b:= not b;
   if b=false then   //
     put(0)
   else

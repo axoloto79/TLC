@@ -1,15 +1,12 @@
 //----------------------------------------------------
 // Programme correct
 //
-//   doit afficher : 
-//>14
 //------------------------------------------------------
 procedure pp is
   function double(v : in integer) return integer is
   begin
     return 2*v
   end;
-  //i : integer;
 begin
   put(double(7))
 end.
