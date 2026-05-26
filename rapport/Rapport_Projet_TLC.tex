@@ -103,16 +103,6 @@
 
 %=== PAGE DE GARDE ===
 \maketitle
-\begin{center}
-    \vspace{1cm}
-    \begin{tikzpicture}[scale=1.5, every node/.style={transform shape}]
-        \draw[thick, navyblue, rounded corners=8pt] (0,0) rectangle (6,3);
-        \node[navyblue] at (3,2.2) {\textbf{COMPILATION}};
-        \node[darkteal, scale=0.8] at (3,1.5) {\texttt{Source.nno} $\rightarrow$ \texttt{Objet.co}};
-        \node[charcoal, scale=0.7] at (3,0.8) {Analyseur + Machine Virtuelle};
-    \end{tikzpicture}
-    \vspace{2cm}
-\end{center}
 \thispagestyle{empty}
 \newpage
 
@@ -203,7 +193,7 @@ Chaque fonction de grammaire (telle que \texttt{program}, \texttt{corpsProgPrinc
 
 \subsection{Structure Interne de la Table}
 La table des identificateurs est implémentée à l'aide d'une classe \texttt{IdentifierTable}. La portée des variables (globales, locales) est gérée par un dictionnaire imbriqué, où chaque clé représente une portée et la valeur associée est un autre dictionnaire contenant les variables déclarées dans cette portée. 
-
+\newline
 \begin{lstlisting}[language=python, caption=Structure de base de la Table des Identificateurs]
 class IdentifierTable:
     def __init__(self):
@@ -211,16 +201,9 @@ class IdentifierTable:
         self.address_counters = {"global": 0}
 \end{lstlisting}
 
-Chaque variable déclarée y est enregistrée avec des caractéristiques riches : son type (\texttt{integer} ou \texttt{boolean}), son rôle (\texttt{variable}, \texttt{parameter}, ou \texttt{local variable}), son adresse d'accès en mémoire ainsi que le mode du paramètre (\texttt{in} ou \texttt{in out}). 
+Chaque variable déclarée y est enregistrée avec des caractéristiques : son type (\texttt{integer} ou \texttt{boolean}), son rôle (\texttt{variable}, \texttt{parameter}, ou \texttt{local variable}), son adresse d'accès en mémoire ainsi que le mode du paramètre (\texttt{in} ou \texttt{in out}). 
 
 Un compteur d'adresse indépendant est incrémenté pour chaque portée à chaque ajout de variable, garantissant l'absence de chevauchement d'adresses au sein d'un même espace de portée.
-
-\subsection{Gestion de l'Adressage Statique et Dynamique}
-L'allocation d'adresse mémoire diffère fortement selon la portée :
-\begin{itemize}
-    \item \textbf{Global} : L'adresse allouée correspond à l'indice direct dans le bloc d'activation principal globale de la pile virtuelle (adressage direct absolu de 0 à $N$).
-    \item \textbf{Local / Paramètre} : L'adresse est calculée comme un décalage relatif par rapport au registre de base (\texttt{self.base}) du bloc de liaison créé lors de l'appel. Les paramètres et les variables locales sont stockés de manière contiguë.
-\end{itemize}
 
 \newpage
 
@@ -255,7 +238,7 @@ Pour éviter les comportements indéterminés à l'exécution, la table des symb
 Le langage NNP intègre deux modes d'appel pour les sous-programmes :
 \begin{itemize}
     \item \textbf{Mode \texttt{in}} : Passage par valeur. La variable locale est lue mais ne peut pas être réécrite par l'appelant en retour.
-    \item \textbf{Mode \texttt{in out}} : Passage par référence (adresse). L'appelant transmet l'adresse du paramètre. Toute modification au sein du sous-programme affecte directement la variable d'origine. L'analyse sémantique s'assure ainsi que le paramètre transmis à un argument \texttt{in out} est bien une variable modifiable (L-value) et non une expression ou une constante.
+    \item \textbf{Mode \texttt{in out}} : Passage par référence (adresse). L'appelant transmet l'adresse du paramètre. Toute modification au sein du sous-programme affecte directement la variable d'origine. L'analyse sémantique s'assure ainsi que le paramètre transmis à un argument \texttt{in out} est bien une variable modifiable et non une expression ou une constante.
 \end{itemize}
 
 \newpage
@@ -313,7 +296,7 @@ La machine virtuelle NNP exécute 31 instructions bas niveau classées comme sui
     \item \textbf{Entrées-Sorties} : \texttt{get()} (lit un entier sur le terminal et le stocke à l'adresse dépilée), \texttt{put()} (affiche la valeur présente au sommet de la pile).
     \item \textbf{Procédures et Fonctions} : instructions d'appel et de retour (\texttt{reserverBloc}, \texttt{traStat}, \texttt{retourProc}, \texttt{retourFonct}, \texttt{empilerParam}).
 \end{itemize}
-
+\newpage
 \subsection{Protocole d'Appel de Procédure / Fonction}
 La mise en place de sous-programmes exige de structurer rigoureusement les blocs d'activation de la pile. Les étapes suivantes sont coordonnées par le compilateur et la MV lors d'un appel :
 \begin{enumerate}
@@ -350,8 +333,6 @@ Le schéma de la pile virtuelle lors de l'exécution d'une fonction avec paramè
         \node (off_p1) [ptr, right=0.5cm of p0] {$\leftarrow$ \texttt{base} + 2};
         \node (off_ret) [ptr, right=0.5cm of ret] {$\leftarrow$ \texttt{base} + 1};
         
-        \draw[dashed, charcoal] ($(top.north west)+(-0.5,0.2)$) -- ($(prev.south west)+(-0.5,-0.2)$);
-        \draw[dashed, charcoal] ($(top.north east)+(0.5,0.2)$) -- ($(prev.south east)+(0.5,-0.2)$);
     \end{tikzpicture}
     \caption{Organisation du bloc d'activation de la pile lors d'un appel}
     \label{fig:stackframe}
@@ -380,6 +361,6 @@ La conception de ce compilateur a principalement été marquée par la complexit
 \end{itemize}
 
 \subsection{Conclusion}
-En somme, ce projet a permis de concrétiser les notions théoriques du cours de TLC en concevant une chaîne de compilation complète ainsi qu'une machine virtuelle à pile fonctionnelle. L'architecture modulaire adoptée a facilité le développement et offert une excellente introduction pratique à la gestion mémoire et à l'exécution bas niveau.
+En conclusion, ce projet a permis de concrétiser les notions théoriques du cours de TLC en concevant une chaîne de compilation complète ainsi qu'une machine virtuelle à pile fonctionnelle. L'architecture modulaire adoptée a facilité le développement et offert une excellente introduction pratique à la gestion mémoire et à l'exécution bas niveau.
 
 \end{document}
