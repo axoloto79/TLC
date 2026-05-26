@@ -80,6 +80,12 @@ class SemanticChecker:
                 return
         raise SemanticException(f"Cannot mark '{name}' as initialized: Variable not declared.")
 
+    def mark_initialized(self, name):
+        for entry in reversed(self.symbols):
+            if entry["name"] == name:
+                entry["initialized"] = True
+                return
+
     def check_init_variable(self, name):
         for entry in reversed(self.symbols):
             if entry["name"] == name:

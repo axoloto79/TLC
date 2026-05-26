@@ -243,9 +243,9 @@ def procedure(lexical_analyser):
     semantic_analyser.declare_procedure(ident, list_params)
     semantic_analyser.enter_scope(ident)
     for param in semantic_analyser.get_parameters(ident):
-        semantic_analyser.declare_variable(param[0], param[1])
+        semantic_analyser.declare_variable(param[0], param[1], param[2])
         if "in" in param[2]:
-            semantic_analyser.init_variable(param[0], param[1])
+            semantic_analyser.mark_initialized(param[0])
 
     lexical_analyser.acceptKeyword("is")
 
@@ -288,9 +288,9 @@ def fonction(lexical_analyser):
     semantic_analyser.enter_scope(ident)
     # Déclaration/initialisation des variables locales de la fonction
     for param in semantic_analyser.get_parameters(ident):
-        semantic_analyser.declare_variable(param[0], param[1])
+        semantic_analyser.declare_variable(param[0], param[1], param[2])
         if "in" in param[2]:
-            semantic_analyser.init_variable(param[0],param[1])
+            semantic_analyser.mark_initialized(param[0])
     lexical_analyser.acceptKeyword("is")
     corpsFonct(lexical_analyser)
     cg.isInsideProcOrFonct = False #On n'est plus dans une fonction
@@ -467,7 +467,9 @@ def instr(lexical_analyser):
         if lexical_analyser.isSymbol(":="):
             lexical_analyser.acceptSymbol(":=")
 
-            if identifierTable.get_symbol(ident, cg.isInside).get("mode") == "in out":
+            semantic_analyser.check_variable_declared(ident)
+            symbol = identifierTable.get_symbol(ident, cg.isInside)
+            if symbol is not None and symbol.get("mode") == "in out":
                 cg.emit("empilerParam", cg.identifier_table[ident])
 
             else: #correction du bug de empiler au lieu de empilerAd
@@ -476,9 +478,6 @@ def instr(lexical_analyser):
                 else:
                     cg.emit("empiler", cg.identifier_table[ident])
             type_ident = expression(lexical_analyser)
-            # Regarde si une variable est bien déclarée
-            semantic_analyser.check_variable_declared(ident)
-            # Regarde si une variable a bien une valeur
             semantic_analyser.init_variable(ident, type_ident)
 
             cg.emit("affectation", None)
