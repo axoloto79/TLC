@@ -8,3 +8,9 @@ Ce projet implémente un **compilateur complet** pour un langage algorithmique i
 cd src
 python main.py
 ```
+
+## Lancer les tests
+
+```bash
+python tests/run_tests.py
+```
