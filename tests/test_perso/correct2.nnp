@@ -1,0 +1,23 @@
+// Comparison operators: <, <=, >, >=, =, /=
+//>1
+//>0
+//>1
+//>1
+//>0
+//>1
+procedure main is
+  r : integer;
+begin
+  if 3 < 5 then r := 1 else r := 0 end;
+  put(r);
+  if 5 < 3 then r := 1 else r := 0 end;
+  put(r);
+  if 3 <= 3 then r := 1 else r := 0 end;
+  put(r);
+  if 5 > 2 then r := 1 else r := 0 end;
+  put(r);
+  if 2 >= 5 then r := 1 else r := 0 end;
+  put(r);
+  if 4 /= 5 then r := 1 else r := 0 end;
+  put(r)
+end.

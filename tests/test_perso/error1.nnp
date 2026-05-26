@@ -1,0 +1,6 @@
+// Assign to undeclared variable
+//! is used without being declared
+procedure main is
+begin
+  x := 5
+end.

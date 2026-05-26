@@ -1,0 +1,12 @@
+// Call function with wrong argument type (integer expected, boolean given)
+//! Invalid type of argument
+procedure main is
+  function square(x : integer) return integer is
+  begin
+    return x * x
+  end;
+  r : integer;
+begin
+  r := square(true);
+  put(r)
+end.

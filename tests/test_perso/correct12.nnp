@@ -1,0 +1,15 @@
+// Function returning boolean used in if condition
+//>1
+//>0
+procedure main is
+  function positive(x : integer) return boolean is
+  begin
+    return x > 0
+  end;
+  r : integer;
+begin
+  if positive(5) then r := 1 else r := 0 end;
+  put(r);
+  if positive(0) then r := 1 else r := 0 end;
+  put(r)
+end.

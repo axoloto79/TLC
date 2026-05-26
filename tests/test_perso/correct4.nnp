@@ -1,0 +1,11 @@
+// If without else: only executes body when condition is true
+//>1
+procedure main is
+  x : integer;
+begin
+  x := 0;
+  if 2 > 1 then
+    x := 1
+  end;
+  put(x)
+end.

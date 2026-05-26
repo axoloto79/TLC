@@ -1,8 +1,0 @@
-procedure main is
-x:integer;
-begin
-  x := 0;
-  while x < 3 loop
-    x := x + 1
-  end
-end.

@@ -1,0 +1,14 @@
+// Logical operators: and, or, not
+//>0
+//>1
+//>1
+procedure main is
+  r : integer;
+begin
+  if true and false then r := 1 else r := 0 end;
+  put(r);
+  if false or true then r := 1 else r := 0 end;
+  put(r);
+  if not false then r := 1 else r := 0 end;
+  put(r)
+end.

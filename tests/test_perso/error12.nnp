@@ -1,0 +1,10 @@
+// Assign to an in-parameter (read-only)
+//! Variable is input
+procedure main is
+  procedure badwrite(x : in integer) is
+  begin
+    x := x + 1
+  end;
+begin
+  badwrite(5)
+end.

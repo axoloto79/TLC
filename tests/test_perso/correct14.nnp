@@ -1,0 +1,16 @@
+// Two functions: triple calls double, result = 3*2 = 6
+//>6
+procedure main is
+  function double(x : integer) return integer is
+  begin
+    return x * 2
+  end;
+  function triple(x : integer) return integer is
+  begin
+    return double(x) + x
+  end;
+  r : integer;
+begin
+  r := triple(2);
+  put(r)
+end.

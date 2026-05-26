@@ -1,0 +1,12 @@
+// Function returning integer: double(7) = 14
+//>14
+procedure main is
+  function double(x : integer) return integer is
+  begin
+    return x * 2
+  end;
+  r : integer;
+begin
+  r := double(7);
+  put(r)
+end.

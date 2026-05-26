@@ -1,5 +1,0 @@
-procedure e is
-  b: integer;
-begin
-  get(b)
-end.

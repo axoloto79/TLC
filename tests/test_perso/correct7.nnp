@@ -1,0 +1,18 @@
+// Nested if inside while: output 0 for i=1, 1 for i=2, 0 for i=3
+//>0
+//>1
+//>0
+procedure main is
+  i, r : integer;
+begin
+  i := 1;
+  while i <= 3 loop
+    if i = 2 then
+      r := 1
+    else
+      r := 0
+    end;
+    put(r);
+    i := i + 1
+  end
+end.

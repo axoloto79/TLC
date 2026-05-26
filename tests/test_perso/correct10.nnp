@@ -1,0 +1,13 @@
+// Procedure with in out parameter: doubles the value in place
+//>10
+procedure main is
+  procedure double(x : in out integer) is
+  begin
+    x := x * 2
+  end;
+  v : integer;
+begin
+  v := 5;
+  double(v);
+  put(v)
+end.

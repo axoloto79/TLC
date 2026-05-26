@@ -1,0 +1,10 @@
+// Binary operation between integer and boolean
+//! Operation between
+procedure main is
+  x : integer;
+  b : boolean;
+begin
+  b := true;
+  x := 1;
+  x := x + b
+end.

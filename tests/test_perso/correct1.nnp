@@ -1,0 +1,17 @@
+// Integer arithmetic: +, -, *, /
+//>5
+//>3
+//>12
+//>5
+procedure main is
+  a, b, c, d : integer;
+begin
+  a := 2 + 3;
+  put(a);
+  b := 5 - 2;
+  put(b);
+  c := 3 * 4;
+  put(c);
+  d := 10 / 2;
+  put(d)
+end.

@@ -1,0 +1,12 @@
+// Call function with wrong number of arguments (expects 1, got 2)
+//! Invalid number of arguments
+procedure main is
+  function inc(x : integer) return integer is
+  begin
+    return x + 1
+  end;
+  r : integer;
+begin
+  r := inc(1, 2);
+  put(r)
+end.

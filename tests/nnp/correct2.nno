@@ -2,7 +2,7 @@
 // Programme correct
 //   
 //
-//    Boucles imbriquées
+//    Boucles imbriquÃ©es
 //   doit afficher 4 fois : 
 //>1
 //>2
@@ -19,8 +19,6 @@ procedure pp is
   end;
   a,b,c : integer;
 begin
-  affiche();
-  get(a);
-  b:=a+1;
-  put(b)
+  affiche(1, 2);
+  affiche(3, 4)
 end.

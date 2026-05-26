@@ -1,0 +1,16 @@
+// Declare the same function name twice
+//! already declared
+procedure main is
+  function f(x : integer) return integer is
+  begin
+    return x
+  end;
+  function f(x : integer) return integer is
+  begin
+    return x + 1
+  end;
+  r : integer;
+begin
+  r := f(1);
+  put(r)
+end.

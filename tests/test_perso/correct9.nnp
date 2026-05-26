@@ -1,0 +1,10 @@
+// Procedure with two in-parameters: add(3, 4) puts 7
+//>7
+procedure main is
+  procedure add(a, b : integer) is
+  begin
+    put(a + b)
+  end;
+begin
+  add(3, 4)
+end.

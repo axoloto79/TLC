@@ -1,0 +1,7 @@
+// Assign integer literal to a boolean variable
+//! Invalid assignment
+procedure main is
+  b : boolean;
+begin
+  b := 42
+end.

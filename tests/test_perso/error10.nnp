@@ -1,0 +1,10 @@
+// Call procedure with wrong argument type (integer expected, boolean given)
+//! Invalid type of argument
+procedure main is
+  procedure show(x : integer) is
+  begin
+    put(x)
+  end;
+begin
+  show(true)
+end.

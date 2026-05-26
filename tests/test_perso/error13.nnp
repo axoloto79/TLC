@@ -1,0 +1,14 @@
+// Declare the same procedure name twice
+//! already declared
+procedure main is
+  procedure p() is
+  begin
+    put(1)
+  end;
+  procedure p() is
+  begin
+    put(2)
+  end;
+begin
+  p()
+end.

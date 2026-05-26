@@ -1,0 +1,10 @@
+// Call procedure with wrong number of arguments (expects 1, got 0)
+//! Invalid number of arguments
+procedure main is
+  procedure greet(x : integer) is
+  begin
+    put(x)
+  end;
+begin
+  greet()
+end.

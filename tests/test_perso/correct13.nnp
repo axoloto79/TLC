@@ -1,0 +1,18 @@
+// Recursive function: factorial(4) = 24
+//>24
+procedure main is
+  function fact(n : integer) return integer is
+    r : integer;
+  begin
+    if n <= 1 then
+      r := 1
+    else
+      r := n * fact(n - 1)
+    end;
+    return r
+  end;
+  res : integer;
+begin
+  res := fact(4);
+  put(res)
+end.

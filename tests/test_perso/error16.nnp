@@ -1,0 +1,7 @@
+// get() called with a boolean variable (expects integer)
+//! GET expects an integer variable
+procedure main is
+  b : boolean;
+begin
+  get(b)
+end.

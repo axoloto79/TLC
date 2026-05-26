@@ -1,4 +1,0 @@
-procedure fibo is
-begin
-  put(8)
-end.

@@ -1,0 +1,10 @@
+// Integer expression used as while-condition
+//! while-condition must be a boolean
+procedure main is
+  x : integer;
+begin
+  x := 3;
+  while x loop
+    x := x - 1
+  end
+end.

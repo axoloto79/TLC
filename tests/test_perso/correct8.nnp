@@ -1,0 +1,14 @@
+// Boolean variable: declare, assign true/false, use in condition
+//>1
+//>0
+procedure main is
+  b : boolean;
+  r : integer;
+begin
+  b := true;
+  if b then r := 1 else r := 0 end;
+  put(r);
+  b := false;
+  if b then r := 1 else r := 0 end;
+  put(r)
+end.

@@ -1,7 +1,0 @@
-procedure main is
-begin
-  x := 2 + 8;
-  y := x * 5;
-  z := y * 5
-end.
-

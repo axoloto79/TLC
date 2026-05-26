@@ -1,0 +1,7 @@
+// Declare the same variable twice in one block
+//! is already declared in this block
+procedure main is
+  x, x : integer;
+begin
+  x := 1
+end.
