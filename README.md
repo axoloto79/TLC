@@ -5,8 +5,7 @@ Ce projet implémente un **compilateur complet** pour un langage algorithmique i
 ## Lancer le projet
 
 ```bash
-cd src
-python main.py
+python src/main.py
 ```
 
 ## Lancer les tests
