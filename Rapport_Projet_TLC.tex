@@ -1,0 +1,385 @@
+\documentclass[a4paper, 12pt]{article}
+
+%------ Langue et Encodage
+\usepackage[french]{babel}
+\usepackage{microtype}
+\emergencystretch=2em
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+%------ Mise en page et Marges
+\usepackage[top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm]{geometry}
+\usepackage{fancyhdr}
+\setlength{\headheight}{14.5pt}
+\usepackage{titlesec}
+
+%------ Paquets Mathématiques et Graphiques
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,positioning,calc}
+
+%------ Couleurs Modernes et Liens
+\usepackage{xcolor}
+\usepackage[colorlinks=true, linkcolor=navyblue, citecolor=navyblue, urlcolor=navyblue]{hyperref}
+
+% Définition de couleurs élégantes
+\definecolor{navyblue}{HTML}{1A365D}
+\definecolor{darkteal}{HTML}{0D9488}
+\definecolor{charcoal}{HTML}{374151}
+\definecolor{codebackground}{HTML}{F9FAFB}
+\definecolor{codecomment}{HTML}{059669}
+\definecolor{codekeyword}{HTML}{7C3AED}
+\definecolor{codestring}{HTML}{D97706}
+\definecolor{codeidentifier}{HTML}{2563EB}
+
+%------ Configuration des Titres
+\titleformat{\section}{\color{navyblue}\normalfont\Large\bfseries}{\thesection}{1em}{}[{\color{navyblue}\titlerule}]
+\titleformat{\subsection}{\color{darkteal}\normalfont\large\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\color{charcoal}\normalfont\normalsize\bfseries}{\thesubsubsection}{1em}{}
+
+%------ Configuration du Code (Listings)
+\usepackage{listings}
+\lstdefinelanguage{nnp}{
+    morekeywords={procedure, function, is, begin, end, return, if, then, else, while, loop, in, out, integer, boolean, true, false, and, or, not, get, put},
+    sensitive=false,
+    morecomment=[l]{//},
+    morestring=[b]"
+}
+
+\lstset{
+    backgroundcolor=\color{codebackground},
+    basicstyle=\ttfamily\small\color{charcoal},
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    commentstyle=\color{codecomment}\itshape,
+    escapeinside={\%*}{*)},
+    extendedchars=true,
+    frame=single,
+    rulecolor=\color{gray!30},
+    keepspaces=true,
+    keywordstyle=\color{codekeyword}\bfseries,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    numbersep=8pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    stringstyle=\color{codestring},
+    tabsize=4,
+    xleftmargin=15pt
+}
+
+%------ Configuration En-têtes et Pieds de page
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\color{gray}\small Projet TLC - Compilateur NNP}
+\fancyhead[R]{\color{gray}\small ENSSAT Lannion}
+\fancyfoot[C]{\color{gray}\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+
+%------ Titre et Métadonnées
+\title{
+    \vspace{2cm}
+    \Huge\color{navyblue}\textbf{Compilateur du Langage NilNovi Procédural (NNP)}\\
+    \vspace{0.5cm}
+    \large\color{charcoal}\textit{Rapport de projet de Théorie des Langages et Compilation}\\
+    \vspace{1.5cm}
+}
+\author{
+    \textbf{Julien Bourdet}\\
+    \textbf{Malo Joannon}\\
+    \textbf{Axel Pavageau} \\
+    \vspace{1cm}\\
+    \color{charcoal}INFO2\\
+    \color{charcoal}ENSSAT Lannion\\
+}
+\date{Mai 2026}
+
+\begin{document}
+
+%=== PAGE DE GARDE ===
+\maketitle
+\begin{center}
+    \vspace{1cm}
+    \begin{tikzpicture}[scale=1.5, every node/.style={transform shape}]
+        \draw[thick, navyblue, rounded corners=8pt] (0,0) rectangle (6,3);
+        \node[navyblue] at (3,2.2) {\textbf{COMPILATION}};
+        \node[darkteal, scale=0.8] at (3,1.5) {\texttt{Source.nno} $\rightarrow$ \texttt{Objet.co}};
+        \node[charcoal, scale=0.7] at (3,0.8) {Analyseur + Machine Virtuelle};
+    \end{tikzpicture}
+    \vspace{2cm}
+\end{center}
+\thispagestyle{empty}
+\newpage
+
+%=== TABLES DES MATIÈRES ===
+\tableofcontents
+\newpage
+
+%=== SECTION 1 : INTRODUCTION ===
+\section{Introduction}
+
+\subsection{Contexte}
+Dans le cadre de l'unité d'enseignement de Théorie des Langages et Compilation (TLC), ce projet consiste à réaliser un compilateur complet pour le langage algorithmique \textbf{NILNOVI PROCÉDURAL (NNP)} ainsi qu'une \textbf{Machine Virtuelle à Pile (MV)} pour en exécuter le code objet. 
+
+Le langage NNP est un langage impératif et fortement typé inspiré de la syntaxe du langage Ada. Il dispose d'instructions classiques d'affectation, de branchements conditionnels (\texttt{if-then-else}), de boucles (\texttt{while-loop}), d'entrées-sorties de base (\texttt{get} et \texttt{put}), ainsi que du support de la déclaration et de l'appel de procédures et de fonctions avec passage de paramètres par valeur (\texttt{in}) et par référence (\texttt{in out}).
+
+\subsection{Architecture Globale du Compilateur}
+La structure du compilateur réalisée est illustrée par la figure \ref{fig:architecture}. Elle s'articule autour de cinq modules distincts et complémentaires écrits en Python :
+\begin{itemize}
+    \item \textbf{L'analyseur lexical} (\texttt{analex.py}) qui convertit le flux de caractères source en unités lexicales (tokens).
+    \item \textbf{L'analyseur syntaxique récursif descendant} (\texttt{anasyn.py}) qui pilote l'ensemble des étapes et assure l'application de la grammaire LL(1).
+    \item \textbf{La table des identificateurs} (\texttt{IdentifierTable} imbriquée dans \texttt{anasyn.py}) qui gère la portée des variables et leur adressage.
+    \item \textbf{L'analyseur sémantique} (\texttt{anasem.py}) qui réalise les vérifications de types, d'initialisation et de signature des appels.
+    \item \textbf{Le générateur de code} (\texttt{code\_generator.py}) qui émet les instructions en langage intermédiaire.
+    \item \textbf{La machine virtuelle à pile} (\texttt{vm.py}) qui exécute le code objet généré.
+\end{itemize}
+
+\begin{figure}[htbp]
+    \centering
+    \resizebox{0.9\linewidth}{!}{%
+\begin{tikzpicture}[node distance=1.5cm, >=stealth, 
+        block/.style={rectangle, draw=navyblue, fill=navyblue!5, thick, rounded corners, minimum width=2.5cm, minimum height=1cm, align=center, text=charcoal},
+        data/.style={ellipse, draw=darkteal, fill=darkteal!5, thick, minimum width=2cm, minimum height=0.8cm, align=center, text=charcoal},
+        error/.style={rectangle, draw=red!80, fill=red!5, thick, rounded corners, minimum width=2cm, minimum height=0.8cm, align=center, text=charcoal}]
+        
+        \node (source) [data] {Code Source\\(\texttt{.nno})};
+        \node (lexical) [block, right=of source] {Analyseur\\Lexical};
+        \node (tokens) [data, right=of lexical] {Chaîne\\Codée};
+        \node (syntactic) [block, right=of tokens] {Analyseur\\Syntaxique};
+        \node (semantic) [block, below=1.5cm of syntactic] {Analyseur\\Sémantique};
+        \node (table) [data, right=1cm of semantic] {Table des\\Identificateurs};
+        \node (generator) [block, below=1.5cm of semantic] {Générateur\\de Code};
+        \node (object) [data, left=of generator] {Code Objet\\(\texttt{.co})};
+        \node (vm) [block, left=of object] {Machine\\Virtuelle};
+        \node (output) [data, below=1cm of vm] {Résultat d'Exécution};
+        \node (errors) [error, above=1cm of syntactic] {Erreurs (Ligne, Col)};
+        
+        \draw[->, thick] (source) -- (lexical);
+        \draw[->, thick] (lexical) -- (tokens);
+        \draw[->, thick] (tokens) -- (syntactic);
+        \draw[<->, thick] (syntactic) -- (semantic);
+        \draw[<->, thick] (semantic) -- (table);
+        \draw[->, thick] (semantic) -- (generator);
+        \draw[->, thick] (generator) -- (object);
+        \draw[->, thick] (object) -- (vm);
+        \draw[->, thick] (vm) -- (output);
+        \draw[->, red!80, thick] (syntactic) -- (errors);
+    \end{tikzpicture}
+}
+    \caption{Architecture modulaire du compilateur NNP et flux de traitement}
+    \label{fig:architecture}
+\end{figure}
+
+\newpage
+
+%=== SECTION 2 : ANALYSE LEXICALE ET SYNTAXIQUE ===
+\section{Analyses Lexicale et Syntaxique}
+
+\subsection{Analyse Lexicale (\texttt{analex.py})}
+L'analyseur lexical convertit les lignes de texte source en une suite d'instances de la classe \texttt{LexicalUnit}. Il ignore les commentaires (débutant par \texttt{//}) ainsi que les espaces et tabulations. Le langage NNP comprend 6 unités lexicales principales modélisées par héritage :
+\begin{itemize}
+    \item \textbf{Keyword} (mot-clé) : représente les 24 mots-clés du langage tels que \texttt{procedure}, \texttt{if}, \texttt{while}, \texttt{integer}.
+    \item \texttt{Identifier} (identificateur) : chaînes alphanumériques représentant les variables ou opérations.
+    \item \textbf{Integer} : stocke la valeur numérique entière lue.
+    \item \textbf{Character} : les caractères délimiteurs de ponctuation simples (\texttt{;}, \texttt{:}, \texttt{,}, \texttt{(}, \texttt{)}).
+    \item \textbf{Symbol} : opérateurs composés ou de comparaison (\texttt{:=}, \texttt{<=}, \texttt{>=}, \texttt{/=}, \texttt{=}).
+    \item \textbf{Fel} : l'unité fictive représentant le point final \texttt{.} achevant le programme principal.
+\end{itemize}
+
+\subsection{Analyse Syntaxique (\texttt{anasyn.py})}
+L'analyse syntaxique valide la conformité grammaticale à l'aide d'un analyseur prédictif récursif descendant. 
+
+Chaque fonction de grammaire (telle que \texttt{program}, \texttt{corpsProgPrinc}, \texttt{partieDecla}, \texttt{instr}, \texttt{expression}, etc.) consomme les tokens fournis par \texttt{LexicalAnalyser} en utilisant des assertions comme \texttt{acceptKeyword(k)} ou \texttt{acceptCharacter(c)}. En cas de divergence par rapport aux schémas autorisés par les diagrammes, une exception \texttt{AnaSynException} est levée.
+
+\newpage
+
+%=== SECTION 3 : TABLE DES IDENTIFICATEURS ===
+\section{Table des Identificateurs}
+
+\subsection{Structure Interne de la Table}
+La table des identificateurs est implémentée à l'aide d'une classe \texttt{IdentifierTable}. La portée des variables (globales, locales) est gérée par un dictionnaire imbriqué, où chaque clé représente une portée et la valeur associée est un autre dictionnaire contenant les variables déclarées dans cette portée. 
+
+\begin{lstlisting}[language=python, caption=Structure de base de la Table des Identificateurs]
+class IdentifierTable:
+    def __init__(self):
+        self.table = {"global": {}}
+        self.address_counters = {"global": 0}
+\end{lstlisting}
+
+Chaque variable déclarée y est enregistrée avec des caractéristiques riches : son type (\texttt{integer} ou \texttt{boolean}), son rôle (\texttt{variable}, \texttt{parameter}, ou \texttt{local variable}), son adresse d'accès en mémoire ainsi que le mode du paramètre (\texttt{in} ou \texttt{in out}). 
+
+Un compteur d'adresse indépendant est incrémenté pour chaque portée à chaque ajout de variable, garantissant l'absence de chevauchement d'adresses au sein d'un même espace de portée.
+
+\subsection{Gestion de l'Adressage Statique et Dynamique}
+L'allocation d'adresse mémoire diffère fortement selon la portée :
+\begin{itemize}
+    \item \textbf{Global} : L'adresse allouée correspond à l'indice direct dans le bloc d'activation principal globale de la pile virtuelle (adressage direct absolu de 0 à $N$).
+    \item \textbf{Local / Paramètre} : L'adresse est calculée comme un décalage relatif par rapport au registre de base (\texttt{self.base}) du bloc de liaison créé lors de l'appel. Les paramètres et les variables locales sont stockés de manière contiguë.
+\end{itemize}
+
+\newpage
+
+%=== SECTION 4 : ANALYSE SÉMANTIQUE ===
+\section{Analyse Sémantique}
+
+L'analyseur sémantique est chargé de s'assurer que le programme respecte les contraintes logiques et les règles de typage du langage NNP. Ce composant est défini dans la classe \texttt{SemanticChecker} (\texttt{anasem.py}) et effectue plusieurs contrôles cruciaux en temps réel durant le parcours syntaxique.
+
+\subsection{Vérification des Déclarations et de la Portée}
+À l'aide d'une pile de dictionnaires représentant les blocs (\texttt{self.scopes}), le sémantique vérifie :
+\begin{itemize}
+    \item Qu'une variable n'est pas déclarée deux fois au sein de la même portée (\texttt{declare\_variable}).
+    \item Qu'une variable ou fonction accédée a bien été préalablement déclarée (\texttt{check\_}\allowbreak\texttt{variable\_}\allowbreak\texttt{declared}).
+\end{itemize}
+
+\subsection{Gestion des Types}
+Le compilateur NNP supporte deux types primitifs : \texttt{integer} (entier) et \texttt{boolean} (booléen). Les vérifications suivantes sont systématiquement opérées :
+\begin{itemize}
+    \item \textbf{Opérations et Expressions} : les opérateurs arithmétiques (\texttt{+}, \texttt{-}, \texttt{*}, \texttt{/}) et de comparaison exigent des opérandes de type \texttt{integer} et renvoient respectivement un type \texttt{integer} ou \texttt{boolean}. Les opérateurs logiques (\texttt{and}, \texttt{or}, \texttt{not}) imposent des opérandes de type \texttt{boolean}.
+    \item \textbf{Conditions} : Les expressions régissant les conditions d'un \texttt{if} ou d'une boucle \texttt{while} doivent impérativement s'évaluer en un type \texttt{boolean} (\texttt{check\_condition\_if} et \texttt{check\_condition\_while}).
+    \item \textbf{Affectations} : Le type de la valeur affectée doit concorder exactement avec le type déclaré de la variable cible.
+\end{itemize}
+
+\subsection{Initialisation avant Utilisation}
+Pour éviter les comportements indéterminés à l'exécution, la table des symboles conserve un booléen d'état \texttt{initialized} :
+\begin{itemize}
+    \item Une affectation ou une opération \texttt{get} marque la variable comme initialisée.
+    \item Toute lecture d'une variable dans une expression provoque un appel à \texttt{check\_init\_}\allowbreak\texttt{variable}, levant une erreur si la variable n'a pas encore reçu de valeur.
+\end{itemize}
+
+\subsection{Validation des Modes de Paramètres}
+Le langage NNP intègre deux modes d'appel pour les sous-programmes :
+\begin{itemize}
+    \item \textbf{Mode \texttt{in}} : Passage par valeur. La variable locale est lue mais ne peut pas être réécrite par l'appelant en retour.
+    \item \textbf{Mode \texttt{in out}} : Passage par référence (adresse). L'appelant transmet l'adresse du paramètre. Toute modification au sein du sous-programme affecte directement la variable d'origine. L'analyse sémantique s'assure ainsi que le paramètre transmis à un argument \texttt{in out} est bien une variable modifiable (L-value) et non une expression ou une constante.
+\end{itemize}
+
+\newpage
+
+%=== SECTION 5 : GÉNÉRATION DE CODE ===
+\section{Génération de Code}
+
+Le module \texttt{code\_generator.py} fournit la classe \texttt{CodeGenerator} chargée de construire la liste d'instructions intermédiaires, nommée \emph{code pseudo-assembleur objet}, et de gérer la résolution d'adresses.
+
+\subsection{Rôle du Générateur}
+L'analyseur syntaxique pilote la génération de code en appelant directement la méthode \texttt{emit(opName, arg)} au sein de ses fonctions de traitement grammatical.
+Le format du code objet produit utilise une écriture standardisée de type \texttt{instruction(argument)} ou \texttt{instruction()}, ce qui facilite son chargement par la Machine Virtuelle.
+
+\subsection{Traduction des Structures de Contrôle}
+La traduction des structures de contrôle comme \texttt{if} et \texttt{while} nécessite l'utilisation d'instructions de branchement inconditionnel (\texttt{tra(adresse)}) et conditionnel si faux (\texttt{tze(adresse)}). Comme l'adresse de destination d'un branchement n'est pas connue au moment de sa première rencontre, le compilateur réalise un \textbf{backpatching} (remplissage d'adresses a posteriori).
+
+\subsubsection{Génération d'une alternative (\texttt{if-then-else})}
+\begin{enumerate}
+    \item Évaluation de l'expression conditionnelle (qui empile $0$ ou $1$).
+    \item Émission d'un \texttt{tze} avec un argument temporaire \texttt{None}. On mémorise la position de ce \texttt{tze} dans le code objet.
+    \item Traitement du bloc \texttt{then}.
+    \item S'il y a un \texttt{else} :
+    \begin{itemize}
+        \item Émission d'un \texttt{tra(None)} pour sauter la partie \texttt{else} à la fin du \texttt{then}.
+        \item Remplacement de l'argument du \texttt{tze} mémorisé par l'adresse de début du bloc \texttt{else}.
+        \item Traitement du bloc \texttt{else}.
+        \item Résolution de l'adresse de saut du \texttt{tra} par l'adresse courante à la sortie du bloc \texttt{else}.
+    \end{itemize}
+    \item S'il n'y a pas de \texttt{else} : Résolution de l'adresse du \texttt{tze} par l'adresse courante à la fin de l'alternative.
+\end{enumerate}
+
+
+\newpage
+
+%=== SECTION 6 : MACHINE VIRTUELLE ===
+\section{Machine Virtuelle}
+
+La Machine Virtuelle (MV), implémentée dans \texttt{vm.py}, est un interpréteur à pile d'exécution linéaire. Elle reproduit le comportement matériel d'une architecture bas niveau.
+
+\subsection{Architecture de la Machine Virtuelle}
+La structure interne de la MV est caractérisée par les registres et espaces mémoires suivants :
+\begin{itemize}
+    \item \texttt{stack} : La pile d'exécution contenant les valeurs (entiers, booléens) et les cadres d'activation.
+    \item \texttt{base} : Pointeur d'accès au cadre (bloc d'activation) courant pour la gestion des variables locales et paramètres.
+    \item \texttt{pc} (Program Counter) : Le compteur ordinal pointant vers l'instruction courante du code objet.
+\end{itemize}
+
+\subsection{Jeu d'Instructions}
+La machine virtuelle NNP exécute 31 instructions bas niveau classées comme suit :
+\begin{itemize}
+    \item \textbf{Gestion de pile et mémoire} : \texttt{reserver(n)}, \texttt{empiler(val)}, \texttt{empilerAd(}\allowbreak\texttt{rel\_addr)} (empile l'adresse absolue calculée comme $\text{base} + 2 + \text{rel\_addr}$), \texttt{affectation()} (consomme adresse et valeur et stocke la valeur dans la pile à l'adresse indiquée), \texttt{valeurPile()} (remplace l'adresse au sommet de la pile par la valeur contenue à cette adresse).
+    \item \textbf{Opérations mathématiques} : \texttt{add}, \texttt{sous}, \texttt{mult}, \texttt{div}, \texttt{moins} (négation arithmétique).
+    \item \textbf{Opérations logiques et comparaisons} : \texttt{et}, \texttt{ou}, \texttt{non}, \texttt{egal}, \texttt{diff}, \texttt{inf}, \texttt{infeg}, \texttt{sup}, \texttt{supeg}.
+    \item \textbf{Contrôle et Branchements} : \texttt{tra(pc\_dst)}, \texttt{tze(pc\_dst)}, \texttt{debutProg}, \texttt{finProg}, \texttt{erreur(msg)}.
+    \item \textbf{Entrées-Sorties} : \texttt{get()} (lit un entier sur le terminal et le stocke à l'adresse dépilée), \texttt{put()} (affiche la valeur présente au sommet de la pile).
+    \item \textbf{Procédures et Fonctions} : instructions d'appel et de retour (\texttt{reserverBloc}, \texttt{traStat}, \texttt{retourProc}, \texttt{retourFonct}, \texttt{empilerParam}).
+\end{itemize}
+
+\subsection{Protocole d'Appel de Procédure / Fonction}
+La mise en place de sous-programmes exige de structurer rigoureusement les blocs d'activation de la pile. Les étapes suivantes sont coordonnées par le compilateur et la MV lors d'un appel :
+\begin{enumerate}
+    \item \textbf{Préparation} : L'instruction \texttt{reserverBloc} insère deux cases réservées au sommet de la pile d'exécution : la sauvegarde de l'ancienne valeur du registre \texttt{base} (chaînage dynamique) et la case pour l'adresse de retour (sauvegarde du \texttt{pc}).
+    \item \textbf{Empilement des paramètres} : L'appelant calcule et empile les paramètres (\texttt{in} ou \texttt{in out}) définis.
+    \item \textbf{Saut et Liaison} : L'instruction \texttt{traStat(}\allowbreak\texttt{addr, }\allowbreak\texttt{nbp)} met à jour le registre \texttt{base} pour cibler le début du nouveau bloc d'activation de la fonction, sauvegarde le \texttt{pc} courant dans l'emplacement d'adresse de retour, puis effectue le saut vers la première instruction du sous-programme (\texttt{pc = addr}).
+    \item \textbf{Allocation locale} : Le sous-programme alloue l'espace pour ses variables locales via \texttt{reserver(n)}.
+\end{enumerate}
+
+Le schéma de la pile virtuelle lors de l'exécution d'une fonction avec paramètres est représenté en figure \ref{fig:stackframe}.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}[
+        stack/.style={rectangle, draw=navyblue, fill=white, minimum width=6cm, minimum height=0.6cm, align=center},
+        highlight/.style={rectangle, draw=darkteal, fill=darkteal!10, minimum width=6cm, minimum height=0.6cm, align=center},
+        ptr/.style={rectangle, minimum width=2cm, align=right}
+    ]
+        % Pile
+        \node (top) [stack] {Variables Locales de la fonction};
+        \node (p1) [stack, below=0cm of top] {Paramètre 2 (\texttt{in out} ou \texttt{in})};
+        \node (p0) [stack, below=0cm of p1] {Paramètre 1 (\texttt{in})};
+        \node (ret) [highlight, below=0cm of p0] {Adresse de retour (\texttt{PC})};
+        \node (base) [highlight, below=0cm of ret] {Ancien pointeur \texttt{base} (Chaînage dynamique)};
+        \node (prev) [stack, below=0cm of base] {Variables globales ou d'appelants précédents};
+
+        % Pointeurs
+        \node (ptr_ip) [ptr, left=1cm of top] {Sommet $\rightarrow$};
+        \node (ptr_base) [ptr, left=1cm of base] {\texttt{base} $\rightarrow$};
+
+        % Annotations de décalage
+        \node (off_loc) [ptr, right=0.5cm of top] {$\leftarrow$ \texttt{base} + 2 + $N$};
+        \node (off_p2) [ptr, right=0.5cm of p1] {$\leftarrow$ \texttt{base} + 3};
+        \node (off_p1) [ptr, right=0.5cm of p0] {$\leftarrow$ \texttt{base} + 2};
+        \node (off_ret) [ptr, right=0.5cm of ret] {$\leftarrow$ \texttt{base} + 1};
+        
+        \draw[dashed, charcoal] ($(top.north west)+(-0.5,0.2)$) -- ($(prev.south west)+(-0.5,-0.2)$);
+        \draw[dashed, charcoal] ($(top.north east)+(0.5,0.2)$) -- ($(prev.south east)+(0.5,-0.2)$);
+    \end{tikzpicture}
+    \caption{Organisation du bloc d'activation de la pile lors d'un appel}
+    \label{fig:stackframe}
+\end{figure}
+
+\subsection{Retour de fonction et restauration}
+Lorsqu'un sous-programme s'achève, la restauration de l'état précédent de la MV s'effectue comme suit :
+\begin{itemize}
+    \item \textbf{Procédure (\texttt{retourProc})} : Restaure la valeur de \texttt{base} lue à \texttt{stack[base]}, réassigne \texttt{pc} à la valeur de retour stockée à \texttt{stack[base + 1]}, puis nettoie l'ensemble du bloc d'activation en supprimant les éléments de la pile à partir de \texttt{base} (\texttt{del stack[base:]}).
+    \item \textbf{Fonction (\texttt{retourFonct})} : Récupère au préalable la valeur de retour au sommet de la pile, effectue la même restauration de \texttt{base} et \texttt{pc} avec nettoyage de la pile, puis ré-empile la valeur de retour finale pour l'appelant.
+\end{itemize}
+
+\newpage
+
+%=== SECTION 7 : DIFFICULTÉS ET PERSPECTIVES ===
+\section{Difficultés, Perspectives et Conclusion}
+
+\subsection{Difficultés rencontrées}
+La conception de ce compilateur a principalement été marquée par la complexité de l'adressage indirect pour le passage de paramètres par référence (\texttt{in out}) et la mise en place du \emph{backpatching} pour le branchement des structures conditionnelles et des boucles. L'intégration avec la machine virtuelle et la détection d'anomalies ont pu être grandement facilitées grâce au développement d'un mode de débogage pas à pas affichant dynamiquement l'état de la pile et des registres.
+
+\subsection{Perspectives d'Évolutions}
+\begin{itemize}
+    \item \textbf{Ajout de types complexes} : Intégration de types tels que des tableaux statiques ou des nombres flottants.
+    \item \textbf{Optimisation de code} : Détection de code mort ou réduction d'expressions constantes à la compilation pour économiser les cycles de la MV.
+    \item \textbf{Garbage Collector} : Gestion automatique d'une zone de tas (heap) pour de l'allocation dynamique.
+\end{itemize}
+
+\subsection{Conclusion}
+En somme, ce projet a permis de concrétiser les notions théoriques du cours de TLC en concevant une chaîne de compilation complète ainsi qu'une machine virtuelle à pile fonctionnelle. L'architecture modulaire adoptée a facilité le développement et offert une excellente introduction pratique à la gestion mémoire et à l'exécution bas niveau.
+
+\end{document}
